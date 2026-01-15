@@ -1,0 +1,7 @@
+pydantic
+fastapi
+python-socketio
+SQLAlchemy
+uvicorn
+pathlib
+dotenv
