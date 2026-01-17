@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from dotenv import dotenv_values
 from pathlib import Path
+from .base_class import Base
 
 current_dir = Path(__file__).parent
 env_path = current_dir / ".env"

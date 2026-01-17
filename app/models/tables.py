@@ -11,7 +11,9 @@ class Users(Base):
     name: Mapped[str] = mapped_column(String(255))
     surname: Mapped[str] = mapped_column(String(255))
     email: Mapped[str] = mapped_column(String(255))
-
+    password: Mapped[str] = mapped_column(String(255))
+    refresh_token: Mapped[str] = mapped_column(String(300))
+    
     users_chats = relationship("UsersChats", back_populates='users')
 
 class Chats(Base):
