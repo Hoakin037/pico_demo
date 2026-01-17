@@ -1,8 +1,8 @@
-from app.models import Users
+from db.models import Users
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from fastapi import HTTPException
-from .data_models import UserCreate, UserDel, UserGet, UserUpdate, UserUpdatePass, UserUpdateRefToken
+from app.schemas import UserCreate, UserDel, UserBase, UserUpdate, UserUpdatePass, UserUpdateRefToken
 
 class UserRepository():
 
@@ -18,7 +18,7 @@ class UserRepository():
         await db.refresh(user) 
 
 
-    async def user_get(self, data: UserGet, db: AsyncSession) -> Users:
+    async def user_get(self, data: UserBase, db: AsyncSession) -> Users:
         try:
             result = await db.execute(select(Users).where(Users.email==data.email))
             existing_user = result.scalars().first()
