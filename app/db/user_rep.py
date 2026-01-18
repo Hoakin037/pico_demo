@@ -2,25 +2,26 @@ from db.models import Users
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from fastapi import HTTPException
-from app.schemas import UserCreate, UserDel, UserBase, UserUpdate, UserUpdatePass, UserUpdateRefToken
 
 class UserRepository():
 
-    async def user_add(self, data: UserCreate, db: AsyncSession):
-        user = Users(email=data.email, name=data.name, surname=data.surname, password=data.password)
-
-        existing_user = await self.user_get(user.email, db)
-        if existing_user != None:
-           raise HTTPException(status_code=400, detail="Пользователь с таким email уже существует!")
+    async def user_add(self, user: Users, db: AsyncSession):
 
         db.add(user)
         await db.commit()
         await db.refresh(user) 
 
+    async def user_update_token(self, user: Users, token: str, db: AsyncSession):
 
-    async def user_get(self, data: UserBase, db: AsyncSession) -> Users:
+        user.refresh_token = token
+        user.is_active = True
+        db.commit()
+        db.refresh(user)
+
+        
+    async def user_get(self, email: str, db: AsyncSession) -> Users:
         try:
-            result = await db.execute(select(Users).where(Users.email==data.email))
+            result = await db.execute(select(Users).where(Users.email==email))
             existing_user = result.scalars().first()
             if existing_user:
                 return existing_user
@@ -28,21 +29,17 @@ class UserRepository():
         except Exception:
             raise HTTPException(status_code=500, detail="Ошибка обращения к БД!")
         
-    async def user_update_pass(self, data: UserUpdatePass, db: AsyncSession):
-        exicting_user = await self.user_get(data.email, db)
-        if exicting_user != None and exicting_user.password == data.current_pass:
-            exicting_user.password = data.new_pass
-            await db.commit()
-        else:
-            raise HTTPException(status_code=404, detail="Пользователь не найден или неверный пароль!")
+    async def user_update_pass(self, user: Users, new_password: str, db: AsyncSession):
         
-    async def user_delete(self, data: UserDel, db: AsyncSession):
-        existing_user = await self.user_get(data.email, db)
-        if existing_user != None and existing_user.password == data.current_pass:
-            await db.delete(existing_user)
-            await db.commit()
-        else:
-            raise HTTPException(status_code=404, detail="Пользователь не найден или неверный пароль!")
+        user.password = new_password
+        await db.commit()
+        await db.refresh(user)
+
+        
+    async def user_delete(self, user: Users, db: AsyncSession):
+        await db.delete(user)
+        await db.commit()
+        
         
 async def get_user_rep():
     return UserRepository()

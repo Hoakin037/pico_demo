@@ -13,6 +13,7 @@ class Users(Base):
     email: Mapped[str] = mapped_column(String(255))
     password: Mapped[str] = mapped_column(String(255))
     refresh_token: Mapped[str] = mapped_column(String(300))
+    is_active: Mapped[bool] = mapped_column(default=False)
     
     users_chats = relationship("UsersChats", back_populates='users')
 

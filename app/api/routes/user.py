@@ -7,3 +7,10 @@ from starlette.responses import Response
 from app.db import UserCreate, UserDel, UserBase, UserUpdate, UserUpdatePass, UserUpdateRefToken
 
 
+user = APIRouter(prefix="/user")
+
+@user.get('/get_info')
+async def user_get_info(
+    user: UserBase,
+    current_user: 
+)

@@ -23,3 +23,4 @@ class UserUpdatePass(UserBase):
 
 class UserUpdateRefToken(UserBase):
     new_token: str = Field(max_length=255)
+    
